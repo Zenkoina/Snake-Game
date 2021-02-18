@@ -8,29 +8,30 @@ let scale = 20
 const waitframes = 6
 let frameswaited = 0
 let startCooldown = 0
+let snake
+let food
 
 document.body.appendChild(canvas)
 canvas.width = innerWidth
 canvas.height = innerHeight
 canvas.style.display = "block" // gets rid of scrollbars
-ctx.fillStyle = '#000000'
-ctx.fillRect(0, 0, innerWidth, innerHeight)
-ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
 
 /*
 TODO:
 
--Create new var gridSize, has x and y
--Add food
+-Add food functionality including tail
 -Add gameover for touching own tail
 -Add buffer to moving & unable to intentionally crash into self
+-Add score counter
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
+-Create new var gridSize, has x and y
+-Scaling canvas to window size (ctx.scale())
 
 */
 
 function Snake() {
-	this.x = scale
-	this.y = scale
+	this.x = Math.floor(Math.random() * 16) * scale + scale
+	this.y = Math.floor(Math.random() * 16) * scale + scale
 	this.xspeed = 1 * scale
 	this.yspeed = 0 * scale
 	this.tail = []
@@ -49,6 +50,9 @@ function Snake() {
 		if (this.x > 16 * scale || this.x < scale || this.y > 16 * scale || this.y < scale) {
 			startGame()
 		}
+		if (this.x === food.x && this.y === food.y) {
+			food = new Food()
+		}
 	}
 	
 	this.draw = () => {
@@ -58,7 +62,16 @@ function Snake() {
 	}
 }
 
-const snake = new Snake()
+function Food() {
+	//Edit to check if snake is on random spot
+	this.x = Math.floor(Math.random() * 16) * scale + scale
+	this.y = Math.floor(Math.random() * 16) * scale + scale
+
+	this.draw = () => {
+		ctx.fillStyle = '#DC143C'
+		ctx.fillRect(this.x, this.y, scale, scale)
+	}
+}
 
 function animate() {
 	requestAnimationFrame(animate)
@@ -68,7 +81,10 @@ function animate() {
 		startCooldown -= 1
 	} else {
 		if (frameswaited === waitframes) {
+			ctx.fillStyle = '#000000'
+			ctx.fillRect(0, 0, innerWidth, innerHeight)
 			ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
+			food.draw()
 			snake.update()
 			snake.draw()
 			frameswaited = 0
@@ -80,13 +96,11 @@ function animate() {
 
 function startGame() {
 	startCooldown = 60
-	snake.tail = []
-	snake.x = Math.floor(Math.random() * 16) * scale + scale
-	snake.y = Math.floor(Math.random() * 16) * scale + scale
-	snake.xspeed = 1 * scale
-	snake.yspeed = 0 * scale
-	// Random new snake location, reset speed
-	// Create new food
+	snake = new Snake()
+	food = new Food()
+	ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
+	snake.draw()
+	food.draw()
 }
 
 addEventListener('keydown', (event) => {
@@ -101,9 +115,12 @@ addEventListener('keydown', (event) => {
 	}
 })
 
+/*
 addEventListener('resize', () => {
 	canvas.width = innerWidth
 	canvas.height = innerHeight
 })
+*/
 
+startGame()
 animate()
