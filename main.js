@@ -98,6 +98,8 @@ function startGame() {
 	startCooldown = 60
 	snake = new Snake()
 	food = new Food()
+	ctx.fillStyle = '#000000'
+	ctx.fillRect(0, 0, innerWidth, innerHeight)
 	ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
 	snake.draw()
 	food.draw()
