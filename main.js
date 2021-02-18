@@ -4,18 +4,33 @@ const ctx = canvas.getContext('2d')
 let scale = 20
 
 //artificial framerate, every 6th frame movement occurs
-const waitframes = 5
+//framerate depends on refresh rate of monitor
+const waitframes = 6
 let frameswaited = 0
+let startCooldown = 0
 
 document.body.appendChild(canvas)
 canvas.width = innerWidth
 canvas.height = innerHeight
 canvas.style.display = "block" // gets rid of scrollbars
-canvas.style.background = 'DarkSlateGray'
+ctx.fillStyle = '#000000'
+ctx.fillRect(0, 0, innerWidth, innerHeight)
+ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
+
+/*
+TODO:
+
+-Create new var gridSize, has x and y
+-Add food
+-Add gameover for touching own tail
+-Add buffer to moving & unable to intentionally crash into self
+-Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
+
+*/
 
 function Snake() {
-	this.x = 20
-	this.y = 20
+	this.x = scale
+	this.y = scale
 	this.xspeed = 1 * scale
 	this.yspeed = 0 * scale
 	this.tail = []
@@ -23,18 +38,21 @@ function Snake() {
 	this.direction = (x, y) => {
 		this.xspeed = x * scale
 		this.yspeed = y * scale
+		if (startCooldown > 0) {
+			startCooldown = 0
+		}
 	}
 	
 	this.update = () => {
-		if (this.x > innerWidth - scale || this.x < 0 || this.y > innerHeight - scale || this.y < 0) {
+		this.x += this.xspeed
+		this.y += this.yspeed
+		if (this.x > 16 * scale || this.x < scale || this.y > 16 * scale || this.y < scale) {
 			startGame()
-		} else {
-			this.x += this.xspeed
-			this.y += this.yspeed
 		}
 	}
 	
 	this.draw = () => {
+		ctx.fillStyle = '#228B22'
 		//fill through tail
 		ctx.fillRect(this.x, this.y, scale, scale)
 	}
@@ -46,20 +64,25 @@ function animate() {
 	requestAnimationFrame(animate)
 	
 	//artificial framerate
-	if (frameswaited === waitframes) {
-		ctx.clearRect(0, 0, canvas.width, canvas.height)
-		snake.update()
-		snake.draw()
-		frameswaited = 0
+	if (startCooldown > 0) {
+		startCooldown -= 1
 	} else {
-		frameswaited += 1
+		if (frameswaited === waitframes) {
+			ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
+			snake.update()
+			snake.draw()
+			frameswaited = 0
+		} else {
+			frameswaited += 1
+		}
 	}
 }
 
 function startGame() {
+	startCooldown = 60
 	snake.tail = []
-	snake.x = 20
-	snake.y = 20
+	snake.x = Math.floor(Math.random() * 16) * scale + scale
+	snake.y = Math.floor(Math.random() * 16) * scale + scale
 	snake.xspeed = 1 * scale
 	snake.yspeed = 0 * scale
 	// Random new snake location, reset speed
