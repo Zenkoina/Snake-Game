@@ -25,8 +25,10 @@ function Snake() {
 	}
 	
 	this.update = () => {
-		this.x += this.xspeed
-		this.y += this.yspeed
+		if (this.x > innerWidth || this.x < 0 || this.y > innerHeight || this.y < 0) {
+			this.x += this.xspeed
+			this.y += this.yspeed
+		}
 	}
 	
 	this.draw = () => {
