@@ -11,6 +11,7 @@ document.body.appendChild(canvas)
 canvas.width = innerWidth
 canvas.height = innerHeight
 canvas.style.display = "block" // gets rid of scrollbars
+canvas.style.background = 'DarkSlateGray'
 
 function Snake() {
 	this.x = 20
@@ -25,7 +26,9 @@ function Snake() {
 	}
 	
 	this.update = () => {
-		if (this.x > innerWidth || this.x < 0 || this.y > innerHeight || this.y < 0) {
+		if (this.x > innerWidth - scale || this.x < 0 || this.y > innerHeight - scale || this.y < 0) {
+			startGame()
+		} else {
 			this.x += this.xspeed
 			this.y += this.yspeed
 		}
@@ -55,6 +58,10 @@ function animate() {
 
 function startGame() {
 	snake.tail = []
+	snake.x = 20
+	snake.y = 20
+	snake.xspeed = 1 * scale
+	snake.yspeed = 0 * scale
 	// Random new snake location, reset speed
 	// Create new food
 }
