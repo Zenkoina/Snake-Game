@@ -7,6 +7,7 @@ let scale = 20
 //framerate depends on refresh rate of monitor
 const waitframes = 6
 let frameswaited = 0
+
 let startCooldown = 0
 let snake
 let food
@@ -47,7 +48,7 @@ function Snake() {
 	this.update = () => {
 		this.x += this.xspeed
 		this.y += this.yspeed
-		if (this.x > 16 * scale || this.x < scale || this.y > 16 * scale || this.y < scale) {
+		if (this.x > scale * 16 || this.x < scale || this.y > scale * 16 || this.y < scale) {
 			startGame()
 		}
 		if (this.x === food.x && this.y === food.y) {
@@ -57,7 +58,7 @@ function Snake() {
 	
 	this.draw = () => {
 		ctx.fillStyle = '#228B22'
-		//fill through tail
+		//add fill through tail
 		ctx.fillRect(this.x, this.y, scale, scale)
 	}
 }
@@ -76,14 +77,13 @@ function Food() {
 function animate() {
 	requestAnimationFrame(animate)
 	
-	//artificial framerate
 	if (startCooldown > 0) {
 		startCooldown -= 1
 	} else {
 		if (frameswaited === waitframes) {
 			ctx.fillStyle = '#000000'
 			ctx.fillRect(0, 0, innerWidth, innerHeight)
-			ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
+			ctx.clearRect(scale, scale, scale * 16, scale * 16)
 			food.draw()
 			snake.update()
 			snake.draw()
@@ -100,7 +100,7 @@ function startGame() {
 	food = new Food()
 	ctx.fillStyle = '#000000'
 	ctx.fillRect(0, 0, innerWidth, innerHeight)
-	ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
+	ctx.clearRect(scale, scale, scale * 16, scale * 16)
 	snake.draw()
 	food.draw()
 }
