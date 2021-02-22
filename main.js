@@ -133,7 +133,6 @@ function startGame() {
 	ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
 	snake.draw()
 	food.draw()
-	UpdateScore()
 }
 
 function UpdateScore() {
