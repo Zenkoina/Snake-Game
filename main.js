@@ -53,14 +53,32 @@ function Snake() {
 		}
 		if (this.x === food.x && this.y === food.y) {
 			food = new Food()
+			//tail
+			this.tail.push(new CreateVector(this.x - this.xspeed, this.y - this.yspeed))
+			console.log(this.tail.length)
+		} else {
+			//tail
+			this.tail.forEach((item, index) => {
+				item = this.tail[index - 1]
+			})
+			this.tail[this.tail.length] = new CreateVector(this.x - this.xspeed, this.y - this.yspeed)
 		}
 	}
 	
 	this.draw = () => {
 		ctx.fillStyle = '#228B22'
-		//add fill through tail
+		//tail
+		this.tail.forEach((item, index) => {
+			ctx.fillRect(item.x, item.y, scale, scale)
+		})
 		ctx.fillRect(this.x, this.y, scale, scale)
 	}
+}
+
+//for tail
+function CreateVector(x, y) {
+	this.x = x
+	this.y = y
 }
 
 function Food() {
