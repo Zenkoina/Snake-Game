@@ -5,7 +5,7 @@ let scale = 20
 
 //artificial framerate, every 6th frame movement occurs
 //framerate depends on refresh rate of monitor
-const waitframes = 6
+const waitframes = 5
 let frameswaited = 0
 
 let startCooldown = 0
@@ -22,7 +22,6 @@ ctx.fillRect(0, 0, innerWidth, innerHeight)
 /*
 TODO:
 
--Add food functionality including tail
 -Add gameover for touching own tail
 -Add buffer to moving & unable to intentionally crash into self
 -Add score counter
@@ -47,15 +46,23 @@ function Snake() {
 		}
 	}
 	
-	this.update = () => {
-		this.x += this.xspeed
-		this.y += this.yspeed
+	this.death = () => {
 		if (this.x > scale * 16 || this.x < scale || this.y > scale * 16 || this.y < scale) {
 			startGame()
 		}
+		this.tail.forEach((item) => {
+			if (item.x === this.x && item.y === this.y) {
+				startGame()
+			}
+		})
+	}
+
+	this.update = () => {
+		this.x += this.xspeed
+		this.y += this.yspeed
 		if (this.x === food.x && this.y === food.y) {
 			food = new Food()
-			//tail
+			food.draw()
 			this.tail.push(new CreateVector(this.x - this.xspeed, this.y - this.yspeed))
 		} else {
 			for (index = 0; index < this.tail.length - 1; index++) {
@@ -65,11 +72,11 @@ function Snake() {
 				this.tail[this.tail.length - 1] = new CreateVector(this.x - this.xspeed, this.y - this.yspeed)
 			}
 		}
+		this.death()
 	}
 	
 	this.draw = () => {
 		ctx.fillStyle = '#228B22'
-		//tail
 		this.tail.forEach((item, index) => {
 			ctx.fillRect(item.x, item.y, scale, scale)
 		})
@@ -78,7 +85,6 @@ function Snake() {
 	}
 }
 
-//for tail
 function CreateVector(x, y) {
 	this.x = x
 	this.y = y
@@ -86,7 +92,7 @@ function CreateVector(x, y) {
 
 
 function Food() {
-	//Edit to check if snake is on random spot
+	//Edit to check if snake is on random spot + any available spots
 	this.x = Math.floor(Math.random() * 16) * scale + scale
 	this.y = Math.floor(Math.random() * 16) * scale + scale
 
