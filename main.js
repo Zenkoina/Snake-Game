@@ -22,7 +22,6 @@ ctx.fillRect(0, 0, innerWidth, innerHeight)
 /*
 TODO:
 
--Add gameover for touching own tail
 -Add buffer to moving & unable to intentionally crash into self
 -Add score counter
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
