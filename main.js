@@ -56,44 +56,34 @@ function Snake() {
 		if (this.x === food.x && this.y === food.y) {
 			food = new Food()
 			//tail
-			//this.tail.push(new CreateVector(this.x - this.xspeed, this.y - this.yspeed))
+			this.tail.push(new CreateVector(this.x - this.xspeed, this.y - this.yspeed))
 		} else {
-			/*
-			this.tail.forEach((item, index) => {
-				if (index = this.tail.length) {
-
-				}
-				//item = this.tail[index + 1]
-				item = new CreateVector(this.tail[index + 1].x, this.tail[index + 1].y)
-			})
-			
-
-			for (index = this.tail.length - 1; index >= 0; index--) {
-				item = this.tail[index + 1]
+			for (index = 0; index < this.tail.length - 1; index++) {
+				this.tail[index] = this.tail[index + 1]
 			}
-
-			this.tail[this.tail.length - 1] = new CreateVector(this.x - this.xspeed, this.y - this.yspeed)
-			*/
+			if (this.tail.length > 0) {
+				this.tail[this.tail.length - 1] = new CreateVector(this.x - this.xspeed, this.y - this.yspeed)
+			}
 		}
 	}
 	
 	this.draw = () => {
 		ctx.fillStyle = '#228B22'
-		/*tail
+		//tail
 		this.tail.forEach((item, index) => {
 			ctx.fillRect(item.x, item.y, scale, scale)
 		})
-		*/
+		
 		ctx.fillRect(this.x, this.y, scale, scale)
 	}
 }
 
-/*for tail
+//for tail
 function CreateVector(x, y) {
 	this.x = x
 	this.y = y
 }
-*/
+
 
 function Food() {
 	//Edit to check if snake is on random spot
