@@ -108,11 +108,15 @@ function animate() {
 		startCooldown -= 1
 	} else {
 		if (frameswaited === waitframes) {
+			ctx.clearRect(0, 0, innerWidth, innerHeight)
+			ctx.fillStyle = '#000000'
+			ctx.fillRect(0, 0, innerWidth, innerHeight)
 			ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
 			food.draw()
 			snake.update()
 			snake.draw()
 			frameswaited = 0
+			UpdateScore()
 		} else {
 			frameswaited += 1
 		}
@@ -123,9 +127,18 @@ function startGame() {
 	startCooldown = 60
 	snake = new Snake()
 	food = new Food()
+	ctx.clearRect(0, 0, innerWidth, innerHeight)
+	ctx.fillStyle = '#000000'
+	ctx.fillRect(0, 0, innerWidth, innerHeight)
 	ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
 	snake.draw()
 	food.draw()
+}
+
+function UpdateScore() {
+	ctx.font = "30px Arial";
+	ctx.fillStyle = '#ffffff'
+	ctx.fillText('Score: ' + snake.tail.length, scale, scale * 16 + 60);
 }
 
 addEventListener('keydown', (event) => {
