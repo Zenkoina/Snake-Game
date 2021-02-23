@@ -2,10 +2,11 @@ const canvas = document.createElement("CANVAS")
 const ctx = canvas.getContext('2d')
 
 let scale = 20
+let gridSize = new CreateVector(15, 15)
 
 //artificial framerate, every 6th frame movement occurs
 //framerate depends on refresh rate of monitor
-const waitframes = 5
+const waitframes = 5 //waits 5 frames for every draw, at 60 fps this results in a frame occouring every ~.100s
 let frameswaited = 0
 
 let startCooldown = 0
@@ -16,23 +17,19 @@ document.body.appendChild(canvas)
 canvas.width = innerWidth
 canvas.height = innerHeight
 canvas.style.display = "block" // gets rid of scrollbars
-ctx.fillStyle = '#000000'
-ctx.fillRect(0, 0, innerWidth, innerHeight)
 
 /*
 TODO:
 
 -Add buffer to moving & unable to intentionally crash into self
--Add score counter
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
--Create new var gridSize, has x and y
 -Scaling canvas to window size (ctx.scale())
 
 */
 
 function Snake() {
-	this.x = Math.floor(Math.random() * 16) * scale + scale
-	this.y = Math.floor(Math.random() * 16) * scale + scale
+	this.x = Math.floor(Math.random() * gridSize.x) * scale + scale
+	this.y = Math.floor(Math.random() * gridSize.y) * scale + scale
 	this.xspeed = 1 * scale
 	this.yspeed = 0 * scale
 	this.tail = []
@@ -46,7 +43,7 @@ function Snake() {
 	}
 	
 	this.death = () => {
-		if (this.x > scale * 16 || this.x < scale || this.y > scale * 16 || this.y < scale) {
+		if (this.x > scale * gridSize.x || this.x < scale || this.y > scale * gridSize.y || this.y < scale) {
 			startGame()
 		}
 		this.tail.forEach((item) => {
@@ -92,8 +89,8 @@ function CreateVector(x, y) {
 
 function Food() {
 	//Edit to check if snake is on random spot + any available spots
-	this.x = Math.floor(Math.random() * 16) * scale + scale
-	this.y = Math.floor(Math.random() * 16) * scale + scale
+	this.x = Math.floor(Math.random() * gridSize.x) * scale + scale
+	this.y = Math.floor(Math.random() * gridSize.y) * scale + scale
 
 	this.draw = () => {
 		ctx.fillStyle = '#DC143C'
@@ -106,17 +103,24 @@ function animate() {
 	
 	if (startCooldown > 0) {
 		startCooldown -= 1
+		ctx.clearRect(0, 0, innerWidth, innerHeight)
+		ctx.fillStyle = '#000000'
+		ctx.fillRect(0, 0, innerWidth, innerHeight)
+		ctx.clearRect(scale, scale, scale * gridSize.x, scale * gridSize.y)
+		food.draw()
+		snake.draw()
+		UpdateText()
 	} else {
 		if (frameswaited === waitframes) {
 			ctx.clearRect(0, 0, innerWidth, innerHeight)
 			ctx.fillStyle = '#000000'
 			ctx.fillRect(0, 0, innerWidth, innerHeight)
-			ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
+			ctx.clearRect(scale, scale, scale * gridSize.x, scale * gridSize.y)
 			food.draw()
 			snake.update()
 			snake.draw()
 			frameswaited = 0
-			UpdateScore()
+			UpdateText()
 		} else {
 			frameswaited += 1
 		}
@@ -127,18 +131,13 @@ function startGame() {
 	startCooldown = 60
 	snake = new Snake()
 	food = new Food()
-	ctx.clearRect(0, 0, innerWidth, innerHeight)
-	ctx.fillStyle = '#000000'
-	ctx.fillRect(0, 0, innerWidth, innerHeight)
-	ctx.clearRect(scale, scale, 16 * scale, 16 * scale)
-	snake.draw()
-	food.draw()
 }
 
-function UpdateScore() {
-	ctx.font = "30px Arial";
+function UpdateText() {
+	ctx.font = "30px Arial"
 	ctx.fillStyle = '#ffffff'
-	ctx.fillText('Score: ' + snake.tail.length, scale, scale * 16 + 60);
+	ctx.fillText('Score: ' + snake.tail.length, scale, scale * gridSize.y + 60)
+	ctx.fillText('Gridsize: ' + gridSize.x + ", " + gridSize.y, scale, scale * gridSize.y + 120)
 }
 
 addEventListener('keydown', (event) => {
@@ -153,8 +152,38 @@ addEventListener('keydown', (event) => {
 	}
 })
 
+
+//Changable grid size for debugging
+let vectorToChange = 'x'
+
 addEventListener('click', () => {
-	console.log(snake.tail)
+	if (vectorToChange === 'x') {
+		gridSize.x -= 1
+	} else {
+		gridSize.y -= 1
+	}
+	startGame()
+})
+
+addEventListener('contextmenu', (event) => {
+	event.preventDefault()
+	if (vectorToChange === 'x') {
+		gridSize.x += 1
+	} else {
+		gridSize.y += 1
+	}
+	startGame()
+})
+
+addEventListener('auxclick', (event) => {
+	event.preventDefault()
+	if (event.button === 1) {
+		if (vectorToChange === 'x') {
+			vectorToChange = 'y'
+		} else {
+			vectorToChange = 'x'
+		}
+	}
 })
 
 /*
