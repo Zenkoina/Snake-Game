@@ -134,10 +134,10 @@ function startGame() {
 }
 
 function UpdateText() {
-	ctx.font = "30px Arial"
+	ctx.font = scale + "px Arial"
 	ctx.fillStyle = '#ffffff'
-	ctx.fillText('Score: ' + snake.tail.length, scale, scale * gridSize.y + 60)
-	ctx.fillText('Gridsize: ' + gridSize.x + ", " + gridSize.y, scale, scale * gridSize.y + 120)
+	ctx.fillText('Score: ' + snake.tail.length, scale, scale * gridSize.y + scale * 2)
+	ctx.fillText('Gridsize: ' + gridSize.x + ", " + gridSize.y, scale, scale * gridSize.y + scale + scale * 2)
 }
 
 addEventListener('keydown', (event) => {
