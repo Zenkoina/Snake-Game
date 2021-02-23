@@ -12,6 +12,7 @@ let frameswaited = 0
 let startCooldown = 0
 let snake
 let food
+let highscore = 0
 
 document.body.appendChild(canvas)
 canvas.width = innerWidth
@@ -134,10 +135,14 @@ function startGame() {
 }
 
 function UpdateText() {
+	if (snake.tail.length > highscore) {
+		highscore = snake.tail.length
+	}
 	ctx.font = scale + "px Arial"
 	ctx.fillStyle = '#ffffff'
-	ctx.fillText('Score: ' + snake.tail.length, scale, scale * gridSize.y + scale * 2)
-	ctx.fillText('Gridsize: ' + gridSize.x + ", " + gridSize.y, scale, scale * gridSize.y + scale + scale * 2)
+	ctx.fillText('Score: ' + snake.tail.length, scale, scale * gridSize.y + scale + scale)
+	ctx.fillText('High score: ' + highscore, scale, scale * gridSize.y + scale + scale * 2)
+	ctx.fillText('Grid size: ' + gridSize.x + ", " + gridSize.y, scale, scale * gridSize.y + scale + scale * 3)
 }
 
 addEventListener('keydown', (event) => {
