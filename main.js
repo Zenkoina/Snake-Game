@@ -22,6 +22,7 @@ canvas.style.display = "block" // gets rid of scrollbars
 /*
 TODO:
 
+-fix food spawning inside of snake, end game if no spots left (use gridsize x*y with snake.length)
 -Add buffer to moving & unable to intentionally crash into self
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
 -Scaling canvas to window size (ctx.scale())
