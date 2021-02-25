@@ -32,17 +32,10 @@ TODO:
 function Snake() {
 	this.x = Math.floor(Math.random() * gridSize.x) * scale + scale
 	this.y = Math.floor(Math.random() * gridSize.y) * scale + scale
-	this.xspeed = 1 * scale
-	this.yspeed = 0 * scale
+	this.direction = 'ArrowRight'
+	this.xspeed
+	this.yspeed
 	this.tail = []
-	
-	this.direction = (x, y) => {
-		this.xspeed = x * scale
-		this.yspeed = y * scale
-		if (startCooldown > 0) {
-			startCooldown = 0
-		}
-	}
 	
 	this.death = () => {
 		if (this.x > scale * gridSize.x || this.x < scale || this.y > scale * gridSize.y || this.y < scale) {
@@ -56,18 +49,31 @@ function Snake() {
 	}
 
 	this.update = () => {
-		this.x += this.xspeed
-		this.y += this.yspeed
+		if (this.direction === 'ArrowRight') {
+			this.xspeed = 1
+			this.yspeed = 0
+		} else if (this.direction === 'ArrowLeft') {
+			this.xspeed = -1
+			this.yspeed = 0
+		} else if (this.direction === 'ArrowUp') {
+			this.xspeed = 0
+			this.yspeed = -1
+		} else if (this.direction === 'ArrowDown') {
+			this.xspeed = 0
+			this.yspeed = 1
+		}
+		this.x += (this.xspeed * scale)
+		this.y += (this.yspeed * scale)
 		if (this.x === food.x && this.y === food.y) {
 			food = new Food()
 			food.draw()
-			this.tail.push(new CreateVector(this.x - this.xspeed, this.y - this.yspeed))
+			this.tail.push(new CreateVector(this.x - this.xspeed * scale, this.y - this.yspeed * scale))
 		} else {
 			for (index = 0; index < this.tail.length - 1; index++) {
 				this.tail[index] = this.tail[index + 1]
 			}
 			if (this.tail.length > 0) {
-				this.tail[this.tail.length - 1] = new CreateVector(this.x - this.xspeed, this.y - this.yspeed)
+				this.tail[this.tail.length - 1] = new CreateVector(this.x - this.xspeed * scale, this.y - this.yspeed * scale)
 			}
 		}
 		this.death()
@@ -78,7 +84,6 @@ function Snake() {
 		this.tail.forEach((item, index) => {
 			ctx.fillRect(item.x, item.y, scale, scale)
 		})
-		
 		ctx.fillRect(this.x, this.y, scale, scale)
 	}
 }
@@ -139,7 +144,7 @@ function UpdateText() {
 	if (snake.tail.length > highscore) {
 		highscore = snake.tail.length
 	}
-	ctx.font = scale + "px Arial"
+	ctx.font = scale + 'px Arial'
 	ctx.fillStyle = '#ffffff'
 	ctx.fillText('Score: ' + snake.tail.length, scale, scale * gridSize.y + scale + scale)
 	ctx.fillText('High score: ' + highscore, scale, scale * gridSize.y + scale + scale * 2)
@@ -147,14 +152,13 @@ function UpdateText() {
 }
 
 addEventListener('keydown', (event) => {
-	if (event.key === 'ArrowUp') {
-		snake.direction(0, -1)
-	} else if (event.key === 'ArrowDown') {
-		snake.direction(0, 1)
-	} else if (event.key === 'ArrowRight') {
-		snake.direction(1, 0)
-	} else if (event.key === 'ArrowLeft') {
-		snake.direction(-1, 0)
+	if (snake.tail.length > 0) {
+		if (event.key === 'ArrowUp' && snake.direction === 'ArrowDown' || event.key === 'ArrowDown' && snake.direction === 'ArrowUp' || event.key === 'ArrowRight' && snake.direction === 'ArrowLeft' || event.key === 'ArrowLeft' && snake.direction === 'ArrowRight') {
+			return
+		}
+	}
+	if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+		snake.direction = event.key
 	}
 })
 
