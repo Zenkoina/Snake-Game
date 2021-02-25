@@ -6,7 +6,7 @@ let gridSize = new CreateVector(15, 15)
 
 //artificial framerate, every 6th frame movement occurs
 //framerate depends on refresh rate of monitor
-const waitframes = 59 //waits 5 frames for every draw, at 60 fps this results in a frame occouring every ~.100s
+const waitframes = 5 //waits 5 frames for every draw, at 60 fps this results in a frame occouring every ~.100s
 let frameswaited = 0
 
 let startCooldown = 0
