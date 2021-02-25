@@ -221,15 +221,12 @@ addEventListener('keydown', (event) => {
 let vectorToChange = 'x'
 
 addEventListener('click', () => {
-	console.log(food.x, food.y)
-	/*
 	if (vectorToChange === 'x') {
 		gridSize.x -= 1
 	} else {
 		gridSize.y -= 1
 	}
 	startGame()
-	*/
 })
 
 addEventListener('contextmenu', (event) => {
