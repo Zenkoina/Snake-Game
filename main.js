@@ -6,7 +6,7 @@ let gridSize = new CreateVector(15, 15)
 
 //artificial framerate, every 6th frame movement occurs
 //framerate depends on refresh rate of monitor
-const waitframes = 5 //waits 5 frames for every draw, at 60 fps this results in a frame occouring every ~.100s
+const waitframes = 59 //waits 5 frames for every draw, at 60 fps this results in a frame occouring every ~.100s
 let frameswaited = 0
 
 let startCooldown = 0
@@ -22,7 +22,10 @@ canvas.style.display = "block" // gets rid of scrollbars
 /*
 TODO:
 
+1. fix directionbuffer/buffermade/direction, check screenshot saved on computer
+
 -fix food spawning inside of snake, end game if no spots left (use gridsize x*y with snake.length)
+	-food has to be created after both snake + tailmovement has happened
 -Add buffer to moving & unable to intentionally crash into self
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
 -Scaling canvas to window size (ctx.scale())
@@ -33,6 +36,9 @@ function Snake() {
 	this.x = Math.floor(Math.random() * gridSize.x) * scale + scale
 	this.y = Math.floor(Math.random() * gridSize.y) * scale + scale
 	this.direction = 'ArrowRight'
+	this.directionChangeCooldown = false
+	this.bufferMade = true
+	this.directionBuffer
 	this.xspeed
 	this.yspeed
 	this.tail = []
@@ -77,6 +83,13 @@ function Snake() {
 			}
 		}
 		this.death()
+		this.bufferMade = true
+		this.directionChangeCooldown = false
+		if (this.directionBuffer != null) {
+			this.direction = this.directionBuffer
+			this.directionBuffer = null
+			this.bufferMade = false
+		}
 	}
 	
 	this.draw = () => {
@@ -152,13 +165,28 @@ function UpdateText() {
 }
 
 addEventListener('keydown', (event) => {
+	if (event.key === 'r') {
+		startGame()
+	}
 	if (snake.tail.length > 0) {
 		if (event.key === 'ArrowUp' && snake.direction === 'ArrowDown' || event.key === 'ArrowDown' && snake.direction === 'ArrowUp' || event.key === 'ArrowRight' && snake.direction === 'ArrowLeft' || event.key === 'ArrowLeft' && snake.direction === 'ArrowRight') {
 			return
 		}
 	}
-	if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+	if (snake.bufferMade = false) {
+		snake.directionChangeCooldown = true
+	}
+	if (snake.directionChangeCooldown === true) {
+		if (event.key != snake.direction) {
+			console.log('event.key is not equal to snake.direction')
+			snake.directionBuffer = event.key
+		}
+	} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
 		snake.direction = event.key
+		snake.directionChangeCooldown = true
+		if (startCooldown > 0) {
+			startCooldown = 0
+		}
 	}
 })
 
