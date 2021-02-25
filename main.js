@@ -173,7 +173,7 @@ addEventListener('keydown', (event) => {
 			return
 		}
 	}
-	if (snake.bufferMade = false) {
+	if (snake.bufferMade === false) {
 		snake.directionChangeCooldown = true
 	}
 	if (snake.directionChangeCooldown === true) {
