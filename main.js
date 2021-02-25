@@ -22,11 +22,7 @@ canvas.style.display = "block" // gets rid of scrollbars
 /*
 TODO:
 
-1. fix directionbuffer/buffermade/direction, check screenshot saved on computer
-
--fix food spawning inside of snake, end game if no spots left (use gridsize x*y with snake.length)
-	-food has to be created after both snake + tailmovement has happened
--Add buffer to moving & unable to intentionally crash into self
+-fix movement, can't be going left then doing up and down same movement frame, will go up then try to buffer down instead of only doing down
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
 -Scaling canvas to window size (ctx.scale())
 
@@ -47,8 +43,8 @@ function Snake() {
 		if (this.x > scale * gridSize.x || this.x < scale || this.y > scale * gridSize.y || this.y < scale) {
 			startGame()
 		}
-		this.tail.forEach((item) => {
-			if (item.x === this.x && item.y === this.y) {
+		this.tail.forEach((segment) => {
+			if (segment.x === this.x && segment.y === this.y) {
 				startGame()
 			}
 		})
@@ -71,9 +67,13 @@ function Snake() {
 		this.x += (this.xspeed * scale)
 		this.y += (this.yspeed * scale)
 		if (this.x === food.x && this.y === food.y) {
-			food = new Food()
-			food.draw()
 			this.tail.push(new CreateVector(this.x - this.xspeed * scale, this.y - this.yspeed * scale))
+			food = new Food()
+			if (food.noSpace === true) {
+				startGame()
+			} else {
+				food.draw()
+			}
 		} else {
 			for (index = 0; index < this.tail.length - 1; index++) {
 				this.tail[index] = this.tail[index + 1]
@@ -109,8 +109,35 @@ function CreateVector(x, y) {
 
 function Food() {
 	//Edit to check if snake is on random spot + any available spots
-	this.x = Math.floor(Math.random() * gridSize.x) * scale + scale
-	this.y = Math.floor(Math.random() * gridSize.y) * scale + scale
+	this.x
+	this.y
+	this.noSpace = false
+
+	if (gridSize.x * gridSize.y - (snake.tail.length + 1) > 0) {
+		let OccupiedSpace = true
+		let position
+		while (OccupiedSpace === true) {
+			OccupiedSpace = false
+			position = new CreateVector(Math.floor(Math.random() * gridSize.x) * scale + scale, Math.floor(Math.random() * gridSize.y) * scale + scale)
+			if (OccupiedSpace === false) {
+				if (snake.x === position.x && snake.y === position.y) {
+					OccupiedSpace = true
+					continue
+				}
+			}
+			for (index = 0; index < snake.tail.length; index++) {
+				if (snake.tail[index].x === position.x && snake.tail[index].y === position.y) {
+					OccupiedSpace = true
+					break
+				}
+			}
+		}
+		this.x = position.x
+		this.y = position.y
+	} else {
+		this.noSpace = true
+		UpdateText()
+	}
 
 	this.draw = () => {
 		ctx.fillStyle = '#DC143C'
@@ -178,7 +205,6 @@ addEventListener('keydown', (event) => {
 	}
 	if (snake.directionChangeCooldown === true) {
 		if (event.key != snake.direction) {
-			console.log('event.key is not equal to snake.direction')
 			snake.directionBuffer = event.key
 		}
 	} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
@@ -195,12 +221,15 @@ addEventListener('keydown', (event) => {
 let vectorToChange = 'x'
 
 addEventListener('click', () => {
+	console.log(food.x, food.y)
+	/*
 	if (vectorToChange === 'x') {
 		gridSize.x -= 1
 	} else {
 		gridSize.y -= 1
 	}
 	startGame()
+	*/
 })
 
 addEventListener('contextmenu', (event) => {
