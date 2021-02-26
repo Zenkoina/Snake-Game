@@ -18,10 +18,12 @@ document.body.appendChild(canvas)
 canvas.width = innerWidth
 canvas.height = innerHeight
 canvas.style.display = "block" // gets rid of scrollbars
+document.body.style.backgroundColor = "Black"
 
 /*
 TODO:
 
+-make snake automatically move in whichever direction will keep it alive the longest
 -fix movement, can't be going left then doing up and down same movement frame, will go up then try to buffer down instead of only doing down
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
 -Scaling canvas to window size (ctx.scale())
@@ -64,15 +66,13 @@ function Snake() {
 			this.xspeed = 0
 			this.yspeed = 1
 		}
-		this.x += (this.xspeed * scale)
-		this.y += (this.yspeed * scale)
+		this.x += this.xspeed * scale
+		this.y += this.yspeed * scale
 		if (this.x === food.x && this.y === food.y) {
 			this.tail.push(new CreateVector(this.x - this.xspeed * scale, this.y - this.yspeed * scale))
 			food = new Food()
 			if (food.noSpace === true) {
 				startGame()
-			} else {
-				food.draw()
 			}
 		} else {
 			for (index = 0; index < this.tail.length - 1; index++) {
@@ -94,8 +94,8 @@ function Snake() {
 	
 	this.draw = () => {
 		ctx.fillStyle = '#228B22'
-		this.tail.forEach((item, index) => {
-			ctx.fillRect(item.x, item.y, scale, scale)
+		this.tail.forEach((segment) => {
+			ctx.fillRect(segment.x, segment.y, scale, scale)
 		})
 		ctx.fillRect(this.x, this.y, scale, scale)
 	}
@@ -150,21 +150,23 @@ function animate() {
 	
 	if (startCooldown > 0) {
 		startCooldown -= 1
-		ctx.clearRect(0, 0, innerWidth, innerHeight)
+		ctx.clearRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
 		ctx.fillStyle = '#000000'
-		ctx.fillRect(0, 0, innerWidth, innerHeight)
-		ctx.clearRect(scale, scale, scale * gridSize.x, scale * gridSize.y)
+		ctx.fillRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
+		ctx.fillStyle = '#ffffff'
+		ctx.fillRect(scale, scale, gridSize.x * scale, gridSize.y * scale)
 		food.draw()
 		snake.draw()
 		UpdateText()
 	} else {
 		if (frameswaited === waitframes) {
-			ctx.clearRect(0, 0, innerWidth, innerHeight)
+			ctx.clearRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
 			ctx.fillStyle = '#000000'
-			ctx.fillRect(0, 0, innerWidth, innerHeight)
-			ctx.clearRect(scale, scale, scale * gridSize.x, scale * gridSize.y)
-			food.draw()
+			ctx.fillRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
+			ctx.fillStyle = '#ffffff'
+			ctx.fillRect(scale, scale, gridSize.x * scale, gridSize.y * scale)
 			snake.update()
+			food.draw()
 			snake.draw()
 			frameswaited = 0
 			UpdateText()
@@ -226,6 +228,7 @@ addEventListener('click', () => {
 	} else {
 		gridSize.y -= 1
 	}
+	resize()
 	startGame()
 })
 
@@ -236,6 +239,7 @@ addEventListener('contextmenu', (event) => {
 	} else {
 		gridSize.y += 1
 	}
+	resize()
 	startGame()
 })
 
@@ -250,12 +254,16 @@ addEventListener('auxclick', (event) => {
 	}
 })
 
-/*
-addEventListener('resize', () => {
+addEventListener('resize', () => {resize()})
+
+function resize() {
+	let usedSpace = new CreateVector(gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
+	const scl = Math.min(innerWidth/usedSpace.x, innerHeight/usedSpace.y)
 	canvas.width = innerWidth
 	canvas.height = innerHeight
-})
-*/
+	ctx.scale(scl, scl)
+}
 
 startGame()
+resize()
 animate()
