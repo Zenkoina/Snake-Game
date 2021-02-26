@@ -22,7 +22,9 @@ canvas.height = innerHeight
 /*
 TODO:
 
--find a better way to find maxDistanceToWall
+-find a better way to find maxDistanceToWall for snakes start direction
+-find a better way to get the maxTextWidth
+-create variables for the clearRect etc that use "magic numbers" (ex. a variable called gamearea with x and y)
 -fix movement, can't be going left then doing up and down same movement frame, will go up then try to buffer down instead of only doing down
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
 -Scaling canvas to window size (ctx.scale())
@@ -171,7 +173,7 @@ function animate() {
 		startCooldown -= 1
 		ctx.clearRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 		ctx.fillStyle = '#000000'
-		ctx.fillRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
+		ctx.fillRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 		ctx.fillStyle = '#ffffff'
 		ctx.fillRect(scale, scale, gridSize.x * scale, gridSize.y * scale)
 		food.draw()
@@ -181,7 +183,7 @@ function animate() {
 		if (frameswaited === waitframes) {
 			ctx.clearRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 			ctx.fillStyle = '#000000'
-			ctx.fillRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
+			ctx.fillRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 			ctx.fillStyle = '#ffffff'
 			ctx.fillRect(scale, scale, gridSize.x * scale, gridSize.y * scale)
 			snake.update()
@@ -222,6 +224,13 @@ function UpdateText() {
 addEventListener('keydown', (event) => {
 	if (event.key === 'r') {
 		startGame()
+	}
+	if (event.key === 'q') {
+		if (vectorToChange === 'x') {
+			vectorToChange = 'y'
+		} else {
+			vectorToChange = 'x'
+		}
 	}
 	if (snake.tail.length > 0) {
 		if (event.key === 'ArrowUp' && snake.direction === 'ArrowDown' || event.key === 'ArrowDown' && snake.direction === 'ArrowUp' || event.key === 'ArrowRight' && snake.direction === 'ArrowLeft' || event.key === 'ArrowLeft' && snake.direction === 'ArrowRight') {
@@ -271,17 +280,6 @@ addEventListener('contextmenu', (event) => {
 	}
 	resize()
 	startGame()
-})
-
-addEventListener('auxclick', (event) => {
-	event.preventDefault()
-	if (event.button === 1) {
-		if (vectorToChange === 'x') {
-			vectorToChange = 'y'
-		} else {
-			vectorToChange = 'x'
-		}
-	}
 })
 
 addEventListener('resize', () => {resize()})
