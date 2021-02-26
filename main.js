@@ -18,8 +18,6 @@ let maxTextWidth = 0
 document.body.appendChild(canvas)
 canvas.width = innerWidth
 canvas.height = innerHeight
-canvas.style.display = "block" // gets rid of scrollbars
-document.body.style.backgroundColor = "Black"
 
 /*
 TODO:
