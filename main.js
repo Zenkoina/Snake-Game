@@ -22,6 +22,7 @@ canvas.height = innerHeight
 /*
 TODO:
 
+-change usedSpace, scale, gridSize, (max)distanceToWall? to const
 -find a better way to find maxDistanceToWall for snakes start direction
 -find a better way to get the maxTextWidth
 -create variables for the clearRect etc that use "magic numbers" (ex. a variable called gamearea with x and y)
