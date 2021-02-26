@@ -13,6 +13,7 @@ let startCooldown = 0
 let snake
 let food
 let highscore = 0
+let maxTextWidth = 0
 
 document.body.appendChild(canvas)
 canvas.width = innerWidth
@@ -23,7 +24,7 @@ document.body.style.backgroundColor = "Black"
 /*
 TODO:
 
--make snake automatically move in whichever direction will keep it alive the longest
+-find a better way to find maxDistanceToWall
 -fix movement, can't be going left then doing up and down same movement frame, will go up then try to buffer down instead of only doing down
 -Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
 -Scaling canvas to window size (ctx.scale())
@@ -33,13 +34,33 @@ TODO:
 function Snake() {
 	this.x = Math.floor(Math.random() * gridSize.x) * scale + scale
 	this.y = Math.floor(Math.random() * gridSize.y) * scale + scale
-	this.direction = 'ArrowRight'
+	this.direction
 	this.directionChangeCooldown = false
 	this.bufferMade = true
 	this.directionBuffer
 	this.xspeed
 	this.yspeed
 	this.tail = []
+
+	let distanceToWall = {
+		"ArrowRight": gridSize.x * scale - this.x,
+		"ArrowLeft": gridSize.x * scale - (gridSize.x * scale - this.x) - scale,
+		"ArrowDown": gridSize.y * scale - this.y,
+		"ArrowUp": gridSize.y * scale - (gridSize.y * scale - this.y) - scale,
+	}
+	let maxDistanceToWall = {
+		Key: null,
+		Distance: 0
+	}
+	for (var key in distanceToWall) {
+		if (distanceToWall.hasOwnProperty(key)) {
+			if (distanceToWall[key] > maxDistanceToWall.Distance) {
+				maxDistanceToWall.Distance = distanceToWall[key]
+				maxDistanceToWall.Key = key
+			}
+		}
+	}
+	this.direction = maxDistanceToWall.Key
 	
 	this.death = () => {
 		if (this.x > scale * gridSize.x || this.x < scale || this.y > scale * gridSize.y || this.y < scale) {
@@ -150,7 +171,7 @@ function animate() {
 	
 	if (startCooldown > 0) {
 		startCooldown -= 1
-		ctx.clearRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
+		ctx.clearRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 		ctx.fillStyle = '#000000'
 		ctx.fillRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
 		ctx.fillStyle = '#ffffff'
@@ -160,7 +181,7 @@ function animate() {
 		UpdateText()
 	} else {
 		if (frameswaited === waitframes) {
-			ctx.clearRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
+			ctx.clearRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 			ctx.fillStyle = '#000000'
 			ctx.fillRect(0, 0, gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
 			ctx.fillStyle = '#ffffff'
@@ -188,9 +209,16 @@ function UpdateText() {
 	}
 	ctx.font = scale + 'px Arial'
 	ctx.fillStyle = '#ffffff'
-	ctx.fillText('Score: ' + snake.tail.length, scale, scale * gridSize.y + scale + scale)
-	ctx.fillText('High score: ' + highscore, scale, scale * gridSize.y + scale + scale * 2)
-	ctx.fillText('Grid size: ' + gridSize.x + ", " + gridSize.y, scale, scale * gridSize.y + scale + scale * 3)
+	const scoreText = 'Score: ' + snake.tail.length
+	const highScoreText = 'High score: ' + highscore
+	const gridSizeText = 'Grid size: ' + gridSize.x + ", " + gridSize.y
+	const longestText = Math.max(ctx.measureText(scoreText).width, ctx.measureText(highScoreText).width, ctx.measureText(gridSizeText).width) + scale
+	ctx.fillText(scoreText, scale, scale * gridSize.y + scale + scale)
+	ctx.fillText(highScoreText, scale, scale * gridSize.y + scale + scale * 2)
+	ctx.fillText(gridSizeText, scale, scale * gridSize.y + scale + scale * 3)
+	if (longestText > maxTextWidth) {
+		maxTextWidth = longestText
+	}
 }
 
 addEventListener('keydown', (event) => {
@@ -224,9 +252,13 @@ let vectorToChange = 'x'
 
 addEventListener('click', () => {
 	if (vectorToChange === 'x') {
-		gridSize.x -= 1
+		if (gridSize.x > 2) {
+			gridSize.x -= 1
+		}
 	} else {
-		gridSize.y -= 1
+		if (gridSize.y > 2) {
+			gridSize.y -= 1
+		}
 	}
 	resize()
 	startGame()
@@ -257,7 +289,7 @@ addEventListener('auxclick', (event) => {
 addEventListener('resize', () => {resize()})
 
 function resize() {
-	let usedSpace = new CreateVector(gridSize.x * scale + scale + scale, gridSize.y * scale + scale + scale * 4)
+	let usedSpace = new CreateVector(Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 	const scl = Math.min(innerWidth/usedSpace.x, innerHeight/usedSpace.y)
 	canvas.width = innerWidth
 	canvas.height = innerHeight
