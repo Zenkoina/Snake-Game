@@ -222,18 +222,28 @@ function UpdateText() {
 }
 
 addEventListener('keydown', (event) => {
+	let directionKey
 	if (event.key === 'r') {
 		startGame()
-	}
-	if (event.key === 'q') {
+		return
+	} else if (event.key === 'q') {
 		if (vectorToChange === 'x') {
 			vectorToChange = 'y'
 		} else {
 			vectorToChange = 'x'
 		}
+		return
+	} else if (event.key === 'w' || event.key === 'ArrowUp') {
+		directionKey = 'ArrowUp'
+	} else if (event.key === 'a' || event.key === 'ArrowLeft') {
+		directionKey = 'ArrowLeft'
+	} else if (event.key === 's' || event.key === 'ArrowDown') {
+		directionKey = 'ArrowDown'
+	} else if (event.key === 'd' || event.key === 'ArrowRight') {
+		directionKey = 'ArrowRight'
 	}
 	if (snake.tail.length > 0) {
-		if (event.key === 'ArrowUp' && snake.direction === 'ArrowDown' || event.key === 'ArrowDown' && snake.direction === 'ArrowUp' || event.key === 'ArrowRight' && snake.direction === 'ArrowLeft' || event.key === 'ArrowLeft' && snake.direction === 'ArrowRight') {
+		if (directionKey === 'ArrowUp' && snake.direction === 'ArrowDown' || directionKey === 'ArrowDown' && snake.direction === 'ArrowUp' || directionKey === 'ArrowRight' && snake.direction === 'ArrowLeft' || directionKey === 'ArrowLeft' && snake.direction === 'ArrowRight') {
 			return
 		}
 	}
@@ -241,11 +251,11 @@ addEventListener('keydown', (event) => {
 		snake.directionChangeCooldown = true
 	}
 	if (snake.directionChangeCooldown === true) {
-		if (event.key != snake.direction) {
-			snake.directionBuffer = event.key
+		if (directionKey != snake.direction) {
+			snake.directionBuffer = directionKey
 		}
-	} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
-		snake.direction = event.key
+	} else if (directionKey != null) {
+		snake.direction = directionKey
 		snake.directionChangeCooldown = true
 		if (startCooldown > 0) {
 			startCooldown = 0
