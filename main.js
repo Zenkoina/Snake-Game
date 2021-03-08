@@ -4,10 +4,9 @@ const ctx = canvas.getContext('2d')
 const scale = 20
 const gridSize = new CreateVector(15, 15)
 
-//artificial framerate, every 6th frame movement occurs
-//framerate depends on refresh rate of monitor
-const waitframes = 5 //waits 5 frames for every draw, at 60 fps this results in a frame occouring every ~.100s
-let frameswaited = 0
+const fps = 10 //if above monitors refresh rate whole game will throttle causing the game to be easier
+const fpsinterval = 1000 / fps
+let then = performance.now() - fpsinterval
 
 let startCooldown = 0
 let snake
@@ -25,7 +24,6 @@ TODO:
 -find a better way to get the maxTextWidth
 -create variables for the clearRect etc that use "magic numbers" (ex. a variable called gamearea with x and y)
 -fix movement, can't be going left then doing up and down same movement frame, will go up then try to buffer down instead of only doing down
--Fix the artifical framerate (use realtime) https://stackoverflow.com/questions/19764018/controlling-fps-with-requestanimationframe
 
 */
 
@@ -163,36 +161,29 @@ function Food() {
 function animate() {
 	requestAnimationFrame(animate)
 	
-	if (startCooldown > 0) {
-		startCooldown -= 1
+	const now = performance.now()
+	const elapsedTime = now - then
+	if (elapsedTime > fpsinterval) {
+		then = now - (elapsedTime % fpsinterval)
+		
 		ctx.clearRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 		ctx.fillStyle = '#000000'
 		ctx.fillRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
 		ctx.fillStyle = '#ffffff'
 		ctx.fillRect(scale, scale, gridSize.x * scale, gridSize.y * scale)
+		if (startCooldown > 0) {
+			startCooldown -= 1
+		} else {
+			snake.update()
+		}
 		food.draw()
 		snake.draw()
 		UpdateText()
-	} else {
-		if (frameswaited === waitframes) {
-			ctx.clearRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
-			ctx.fillStyle = '#000000'
-			ctx.fillRect(0, 0, Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
-			ctx.fillStyle = '#ffffff'
-			ctx.fillRect(scale, scale, gridSize.x * scale, gridSize.y * scale)
-			snake.update()
-			food.draw()
-			snake.draw()
-			frameswaited = 0
-			UpdateText()
-		} else {
-			frameswaited += 1
-		}
 	}
 }
 
 function startGame() {
-	startCooldown = 60
+	startCooldown = 1000 / fpsinterval
 	snake = new Snake()
 	food = new Food()
 }
