@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d')
 const scale = 20
 const gridSize = new CreateVector(15, 15)
 
-const fps = 10 //if above monitors refresh rate whole game will throttle causing the game to be easier
+const fps = 10 //if above monitors refresh rate whole game will throttle causing the game to be "easier" or run slower
 const fpsinterval = 1000 / fps
 let then = performance.now() - fpsinterval
 
