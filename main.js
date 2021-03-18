@@ -293,7 +293,7 @@ addEventListener('contextmenu', (event) => {
 	startGame()
 })
 
-addEventListener('resize', () => {resize()})
+addEventListener('resize', resize)
 
 function resize() {
 	let usedSpace = new CreateVector(Math.max(gridSize.x * scale + scale + scale, maxTextWidth), gridSize.y * scale + scale + scale * 4)
