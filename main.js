@@ -120,7 +120,6 @@ function CreateVector(x, y) {
 	this.y = y
 }
 
-
 function Food() {
 	this.x
 	this.y
@@ -247,7 +246,6 @@ addEventListener('keydown', (event) => {
 		}
 	}
 })
-
 
 //Changable grid size for debugging
 let vectorToChange = 'x'
