@@ -13,6 +13,7 @@ let snake
 let food
 let highscore = 0
 let maxTextWidth = 0
+let Stylish = false
 
 document.body.appendChild(canvas)
 canvas.width = innerWidth
@@ -112,6 +113,28 @@ function Snake() {
 			ctx.fillRect(segment.x, segment.y, scale, scale)
 		})
 		ctx.fillRect(this.x, this.y, scale, scale)
+
+		if (Stylish === true) {
+			//Drawing Eye
+			ctx.beginPath()
+			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 3, 0, 2 * Math.PI)
+			ctx.fillStyle = '#ffffff'
+			ctx.fill()
+			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 3, 0, 2 * Math.PI)
+			ctx.stroke()
+			ctx.beginPath()
+			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 5, 0, 2 * Math.PI)
+			ctx.fillStyle = '#000000'
+			ctx.fill()
+			ctx.beginPath()
+			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 6, 0, 2 * Math.PI)
+			ctx.fillStyle = '#03A9F4'
+			ctx.fill()
+			ctx.beginPath()
+			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 10, 0, 2 * Math.PI)
+			ctx.fillStyle = '#000000'
+			ctx.fill()
+		}
 	}
 }
 
@@ -153,7 +176,15 @@ function Food() {
 
 	this.draw = () => {
 		ctx.fillStyle = '#DC143C'
-		ctx.fillRect(this.x, this.y, scale, scale)
+		if (Stylish === true) {
+			//Advanced Apple
+			ctx.fillRect(this.x + scale * 0.25, this.y + scale * 0.25 + scale * 0.1, scale - scale * 0.5, scale - scale * 0.5)
+			ctx.fillStyle = '#006400'
+			ctx.fillRect(this.x + scale * 0.45, this.y + scale * 0.15, scale * 0.1, scale * 0.2)
+		} else {
+			//Basic Apple
+			ctx.fillRect(this.x, this.y, scale, scale)
+		}
 	}
 }
 
@@ -225,6 +256,12 @@ addEventListener('keydown', (event) => {
 		directionKey = 'ArrowDown'
 	} else if (event.key === 'd' || event.key === 'ArrowRight') {
 		directionKey = 'ArrowRight'
+	} else if (event.key === 't') {
+		if (Stylish === true) {
+			Stylish = false
+		} else {
+			Stylish = true
+		}
 	}
 	if (snake.tail.length > 0) {
 		if (directionKey === 'ArrowUp' && snake.direction === 'ArrowDown' || directionKey === 'ArrowDown' && snake.direction === 'ArrowUp' || directionKey === 'ArrowRight' && snake.direction === 'ArrowLeft' || directionKey === 'ArrowLeft' && snake.direction === 'ArrowRight') {
