@@ -257,11 +257,7 @@ addEventListener('keydown', (event) => {
 	} else if (event.key === 'd' || event.key === 'ArrowRight') {
 		directionKey = 'ArrowRight'
 	} else if (event.key === 't') {
-		if (Stylish === true) {
-			Stylish = false
-		} else {
-			Stylish = true
-		}
+		Stylish = (Stylish === true) ? false : true
 	}
 	if (snake.tail.length > 0) {
 		if (directionKey === 'ArrowUp' && snake.direction === 'ArrowDown' || directionKey === 'ArrowDown' && snake.direction === 'ArrowUp' || directionKey === 'ArrowRight' && snake.direction === 'ArrowLeft' || directionKey === 'ArrowLeft' && snake.direction === 'ArrowRight') {
