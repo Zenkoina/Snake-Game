@@ -1,4 +1,4 @@
-const canvas = document.createElement("CANVAS")
+const canvas = document.createElement('CANVAS')
 const ctx = canvas.getContext('2d')
 
 const scale = 20
@@ -39,10 +39,10 @@ function Snake() {
 	this.tail = []
 
 	const distanceToWall = {
-		"ArrowRight": gridSize.x * scale - this.x,
-		"ArrowLeft": gridSize.x * scale - (gridSize.x * scale - this.x) - scale,
-		"ArrowDown": gridSize.y * scale - this.y,
-		"ArrowUp": gridSize.y * scale - (gridSize.y * scale - this.y) - scale,
+		'ArrowRight': gridSize.x * scale - this.x,
+		'ArrowLeft': gridSize.x * scale - (gridSize.x * scale - this.x) - scale,
+		'ArrowDown': gridSize.y * scale - this.y,
+		'ArrowUp': gridSize.y * scale - (gridSize.y * scale - this.y) - scale,
 	}
 	let maxDistanceToWall = null
 
@@ -194,9 +194,9 @@ function UpdateText() {
 	}
 	ctx.font = scale + 'px Arial'
 	ctx.fillStyle = '#ffffff'
-	const scoreText = 'Score: ' + snake.tail.length
-	const highScoreText = 'High score: ' + highscore
-	const gridSizeText = 'Grid size: ' + gridSize.x + ", " + gridSize.y
+	const scoreText = `Score: ${snake.tail.length}`
+	const highScoreText = `High score: ${highscore}`
+	const gridSizeText = `Grid size: ${gridSize.x}, ${gridSize.y}`
 	const longestText = Math.max(ctx.measureText(scoreText).width, ctx.measureText(highScoreText).width, ctx.measureText(gridSizeText).width) + scale
 	ctx.fillText(scoreText, scale, scale * gridSize.y + scale + scale)
 	ctx.fillText(highScoreText, scale, scale * gridSize.y + scale + scale * 2)
