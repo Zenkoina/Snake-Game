@@ -11,7 +11,7 @@ let then = performance.now() - fpsinterval
 let startCooldown = 0
 let snake
 let food
-let highscore = 0
+let highscore = parseInt(localStorage.getItem('highscore'), 10) || 0
 let maxTextWidth = 0
 let Stylish = false
 
@@ -221,6 +221,7 @@ function startGame() {
 function UpdateText() {
 	if (snake.tail.length > highscore) {
 		highscore = snake.tail.length
+		localStorage.setItem('highscore', highscore.toString())
 	}
 	ctx.font = scale + 'px Arial'
 	ctx.fillStyle = '#ffffff'
