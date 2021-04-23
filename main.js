@@ -69,15 +69,7 @@ class Snake {
 
 	update() {
 		this.vel.mult(0)
-		if (this.direction === 'ArrowRight') {
-			this.vel.add(new CreateVector(1, 0))
-		} else if (this.direction === 'ArrowLeft') {
-			this.vel.add(new CreateVector(-1, 0))
-		} else if (this.direction === 'ArrowUp') {
-			this.vel.add(new CreateVector(0, -1))
-		} else if (this.direction === 'ArrowDown') {
-			this.vel.add(new CreateVector(0, 1))
-		}
+		this.vel = (this.direction === 'ArrowRight') ? new CreateVector(1, 0) : ((this.direction === 'ArrowLeft') ? new CreateVector(-1, 0) : ((this.direction === 'ArrowUp') ? new CreateVector(0, -1) : new CreateVector(0, 1)))
 		this.pos.add(this.vel.mult(scale))
 		if (this.pos.x === food.pos.x && this.pos.y === food.pos.y) {
 			this.tail.push(new CreateVector(this.pos.x - this.vel.x, this.pos.y - this.vel.y))
@@ -233,20 +225,16 @@ addEventListener('keydown', (event) => {
 	if (event.key === 'r') {
 		startGame()
 		return
-	} else if (event.key === 'q') {
+	}
+	if (event.key === 'q') {
 		vectorToChange = (vectorToChange === 'x') ? vectorToChange = 'y' : vectorToChange = 'x'
 		return
-	} else if (event.key === 'w' || event.key === 'ArrowUp') {
-		directionKey = 'ArrowUp'
-	} else if (event.key === 'a' || event.key === 'ArrowLeft') {
-		directionKey = 'ArrowLeft'
-	} else if (event.key === 's' || event.key === 'ArrowDown') {
-		directionKey = 'ArrowDown'
-	} else if (event.key === 'd' || event.key === 'ArrowRight') {
-		directionKey = 'ArrowRight'
-	} else if (event.key === 't') {
-		Stylish = (Stylish === true) ? false : true
 	}
+	if (event.key === 't') {
+		Stylish = (Stylish === true) ? false : true
+		return
+	}
+	directionKey = (event.key === 'w' || event.key === 'ArrowUp') ? 'ArrowUp' : ((event.key === 'a' || event.key === 'ArrowLeft') ? 'ArrowLeft' : ((event.key === 's' || event.key === 'ArrowDown') ? 'ArrowDown' : ((event.key === 'd' || event.key === 'ArrowRight') ? 'ArrowRight' : undefined)))
 	if (snake.tail.length > 0) {
 		if (directionKey === 'ArrowUp' && snake.direction === 'ArrowDown' || directionKey === 'ArrowDown' && snake.direction === 'ArrowUp' || directionKey === 'ArrowRight' && snake.direction === 'ArrowLeft' || directionKey === 'ArrowLeft' && snake.direction === 'ArrowRight') {
 			return
