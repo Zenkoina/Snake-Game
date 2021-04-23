@@ -28,73 +28,69 @@ TODO:
 
 */
 
-function Snake() {
-	this.x = Math.floor(Math.random() * gridSize.x) * scale + scale
-	this.y = Math.floor(Math.random() * gridSize.y) * scale + scale
-	this.direction
-	this.directionChangeCooldown = false
-	this.bufferMade = true
-	this.directionBuffer
-	this.xspeed
-	this.yspeed
-	this.tail = []
+class Snake {
+	constructor() {
+		this.pos = new CreateVector(Math.floor(Math.random() * gridSize.x) * scale + scale, Math.floor(Math.random() * gridSize.y) * scale + scale)
+		this.vel = new CreateVector(0, 0)
+		this.direction
+		this.directionBuffer
+		this.directionChangeCooldown = false
+		this.bufferMade = true
+		this.tail = []
 
-	const distanceToWall = {
-		'ArrowRight': gridSize.x * scale - this.x,
-		'ArrowLeft': gridSize.x * scale - (gridSize.x * scale - this.x) - scale,
-		'ArrowDown': gridSize.y * scale - this.y,
-		'ArrowUp': gridSize.y * scale - (gridSize.y * scale - this.y) - scale,
-	}
-	let maxDistanceToWall = null
+		const distanceToWall = {
+			'ArrowRight': gridSize.x * scale - this.pos.x,
+			'ArrowLeft': gridSize.x * scale - (gridSize.x * scale - this.pos.x) - scale,
+			'ArrowDown': gridSize.y * scale - this.pos.y,
+			'ArrowUp': gridSize.y * scale - (gridSize.y * scale - this.pos.y) - scale,
+		}
+		let maxDistanceToWall = null
 
-	for (var key in distanceToWall) {
-		if (distanceToWall.hasOwnProperty(key)) {
-			if (distanceToWall[key] > distanceToWall[maxDistanceToWall] || maxDistanceToWall === null) {
-				maxDistanceToWall = key
+		for (var key in distanceToWall) {
+			if (distanceToWall.hasOwnProperty(key)) {
+				if (distanceToWall[key] > distanceToWall[maxDistanceToWall] || maxDistanceToWall === null) {
+					maxDistanceToWall = key
+				}
 			}
 		}
+		this.direction = maxDistanceToWall
 	}
-	this.direction = maxDistanceToWall
-	
-	this.death = () => {
-		if (this.x > scale * gridSize.x || this.x < scale || this.y > scale * gridSize.y || this.y < scale) {
+
+	death() {
+		if (this.pos.x > scale * gridSize.x || this.pos.x < scale || this.pos.y > scale * gridSize.y || this.pos.y < scale) {
 			startGame()
 		}
 		this.tail.forEach((segment) => {
-			if (segment.x === this.x && segment.y === this.y) {
+			if (segment.x === this.pos.x && segment.y === this.pos.y) {
 				startGame()
 			}
 		})
 	}
 
-	this.update = () => {
+	update() {
+		this.vel.mult(0)
 		if (this.direction === 'ArrowRight') {
-			this.xspeed = 1
-			this.yspeed = 0
+			this.vel.add(new CreateVector(1, 0))
 		} else if (this.direction === 'ArrowLeft') {
-			this.xspeed = -1
-			this.yspeed = 0
+			this.vel.add(new CreateVector(-1, 0))
 		} else if (this.direction === 'ArrowUp') {
-			this.xspeed = 0
-			this.yspeed = -1
+			this.vel.add(new CreateVector(0, -1))
 		} else if (this.direction === 'ArrowDown') {
-			this.xspeed = 0
-			this.yspeed = 1
+			this.vel.add(new CreateVector(0, 1))
 		}
-		this.x += this.xspeed * scale
-		this.y += this.yspeed * scale
-		if (this.x === food.x && this.y === food.y) {
-			this.tail.push(new CreateVector(this.x - this.xspeed * scale, this.y - this.yspeed * scale))
+		this.pos.add(this.vel.mult(scale))
+		if (this.pos.x === food.pos.x && this.pos.y === food.pos.y) {
+			this.tail.push(new CreateVector(this.pos.x - this.vel.x, this.pos.y - this.vel.y))
 			food = new Food()
 			if (food.noSpace === true) {
 				startGame()
 			}
 		} else {
-			for (index = 0; index < this.tail.length - 1; index++) {
+			for (let index = 0; index < this.tail.length - 1; index++) {
 				this.tail[index] = this.tail[index + 1]
 			}
 			if (this.tail.length > 0) {
-				this.tail[this.tail.length - 1] = new CreateVector(this.x - this.xspeed * scale, this.y - this.yspeed * scale)
+				this.tail[this.tail.length - 1] = new CreateVector(this.pos.x - this.vel.x, this.pos.y - this.vel.y)
 			}
 		}
 		this.death()
@@ -106,84 +102,79 @@ function Snake() {
 			this.bufferMade = false
 		}
 	}
-	
-	this.draw = () => {
+
+	draw() {
 		ctx.fillStyle = '#228B22'
 		this.tail.forEach((segment) => {
 			ctx.fillRect(segment.x, segment.y, scale, scale)
 		})
-		ctx.fillRect(this.x, this.y, scale, scale)
+		ctx.fillRect(this.pos.x, this.pos.y, scale, scale)
 
 		if (Stylish === true) {
 			//Drawing Eye
 			ctx.beginPath()
-			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 3, 0, 2 * Math.PI)
+			ctx.arc(this.pos.x + scale / 2, this.pos.y + scale / 2, scale / 3, 0, 2 * Math.PI)
 			ctx.fillStyle = '#ffffff'
 			ctx.fill()
-			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 3, 0, 2 * Math.PI)
+			ctx.arc(this.pos.x + scale / 2, this.pos.y + scale / 2, scale / 3, 0, 2 * Math.PI)
 			ctx.stroke()
 			ctx.beginPath()
-			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 5, 0, 2 * Math.PI)
+			ctx.arc(this.pos.x + scale / 2, this.pos.y + scale / 2, scale / 5, 0, 2 * Math.PI)
 			ctx.fillStyle = '#000000'
 			ctx.fill()
 			ctx.beginPath()
-			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 6, 0, 2 * Math.PI)
+			ctx.arc(this.pos.x + scale / 2, this.pos.y + scale / 2, scale / 6, 0, 2 * Math.PI)
 			ctx.fillStyle = '#03A9F4'
 			ctx.fill()
 			ctx.beginPath()
-			ctx.arc(this.x + scale / 2, this.y + scale / 2, scale / 10, 0, 2 * Math.PI)
+			ctx.arc(this.pos.x + scale / 2, this.pos.y + scale / 2, scale / 10, 0, 2 * Math.PI)
 			ctx.fillStyle = '#000000'
 			ctx.fill()
 		}
 	}
 }
 
-function CreateVector(x, y) {
-	this.x = x
-	this.y = y
-}
+class Food {
+	constructor() {
+		this.pos = new CreateVector(0, 0)
+		this.noSpace = false
 
-function Food() {
-	this.x
-	this.y
-	this.noSpace = false
-
-	if (gridSize.x * gridSize.y - (snake.tail.length + 1) > 0) {
-		let OccupiedSpace = true
-		let position
-		while (OccupiedSpace === true) {
-			OccupiedSpace = false
-			position = new CreateVector(Math.floor(Math.random() * gridSize.x) * scale + scale, Math.floor(Math.random() * gridSize.y) * scale + scale)
-			if (OccupiedSpace === false) {
-				if (snake.x === position.x && snake.y === position.y) {
-					OccupiedSpace = true
-					continue
+		if (gridSize.x * gridSize.y - (snake.tail.length + 1) > 0) {
+			let OccupiedSpace = true
+			let position
+			while (OccupiedSpace === true) {
+				OccupiedSpace = false
+				position = new CreateVector(Math.floor(Math.random() * gridSize.x) * scale + scale, Math.floor(Math.random() * gridSize.y) * scale + scale)
+				if (OccupiedSpace === false) {
+					if (snake.pos.x === position.x && snake.pos.y === position.y) {
+						OccupiedSpace = true
+						continue
+					}
+				}
+				for (let index = 0; index < snake.tail.length; index++) {
+					if (snake.tail[index].x === position.x && snake.tail[index].y === position.y) {
+						OccupiedSpace = true
+						break
+					}
 				}
 			}
-			for (index = 0; index < snake.tail.length; index++) {
-				if (snake.tail[index].x === position.x && snake.tail[index].y === position.y) {
-					OccupiedSpace = true
-					break
-				}
-			}
+			this.pos.add(position)
+		} else {
+			this.noSpace = true
+			UpdateText()
 		}
-		this.x = position.x
-		this.y = position.y
-	} else {
-		this.noSpace = true
-		UpdateText()
 	}
 
-	this.draw = () => {
+	draw() {
 		ctx.fillStyle = '#DC143C'
 		if (Stylish === true) {
 			//Advanced Apple
-			ctx.fillRect(this.x + scale * 0.25, this.y + scale * 0.25 + scale * 0.1, scale - scale * 0.5, scale - scale * 0.5)
+			ctx.fillRect(this.pos.x + scale * 0.25, this.pos.y + scale * 0.25 + scale * 0.1, scale - scale * 0.5, scale - scale * 0.5)
 			ctx.fillStyle = '#006400'
-			ctx.fillRect(this.x + scale * 0.45, this.y + scale * 0.15, scale * 0.1, scale * 0.2)
+			ctx.fillRect(this.pos.x + scale * 0.45, this.pos.y + scale * 0.15, scale * 0.1, scale * 0.2)
 		} else {
 			//Basic Apple
-			ctx.fillRect(this.x, this.y, scale, scale)
+			ctx.fillRect(this.pos.x, this.pos.y, scale, scale)
 		}
 	}
 }
