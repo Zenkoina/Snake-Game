@@ -23,7 +23,6 @@ canvas.height = innerHeight
 TODO:
 
 -find a better way to get the maxTextWidth
--create variables for the clearRect etc that use "magic numbers" (ex. a variable called gamearea with x and y)
 -fix movement, can't be going left then doing up and down same movement frame, will go up then try to buffer down instead of only doing down
 
 */
@@ -38,6 +37,7 @@ class Snake {
 		this.bufferMade = true
 		this.tail = []
 
+		//Finds out which way to move the snake at start depending on the farthest wall it is from
 		const distanceToWall = {
 			'ArrowRight': gridSize.x * scale - this.pos.x,
 			'ArrowLeft': gridSize.x * scale - (gridSize.x * scale - this.pos.x) - scale,
@@ -111,7 +111,7 @@ class Snake {
 		ctx.fillRect(this.pos.x, this.pos.y, scale, scale)
 
 		if (Stylish === true) {
-			//Drawing Eye
+			//Drawing Eye on snake
 			ctx.beginPath()
 			ctx.arc(this.pos.x + scale / 2, this.pos.y + scale / 2, scale / 3, 0, 2 * Math.PI)
 			ctx.fillStyle = '#ffffff'
