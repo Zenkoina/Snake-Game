@@ -100,6 +100,7 @@ class Snake {
 		this.tail.forEach((segment) => {
 			ctx.fillRect(segment.x, segment.y, scale, scale)
 		})
+		ctx.fillStyle = '#259425'
 		ctx.fillRect(this.pos.x, this.pos.y, scale, scale)
 
 		if (Stylish === true) {
