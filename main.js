@@ -234,11 +234,7 @@ addEventListener('keydown', (event) => {
 		startGame()
 		return
 	} else if (event.key === 'q') {
-		if (vectorToChange === 'x') {
-			vectorToChange = 'y'
-		} else {
-			vectorToChange = 'x'
-		}
+		vectorToChange = (vectorToChange === 'x') ? vectorToChange = 'y' : vectorToChange = 'x'
 		return
 	} else if (event.key === 'w' || event.key === 'ArrowUp') {
 		directionKey = 'ArrowUp'
