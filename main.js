@@ -31,7 +31,7 @@ TODO:
 class Snake {
 	constructor() {
 		this.pos = new CreateVector(Math.floor(Math.random() * gridSize.x) * scale + scale, Math.floor(Math.random() * gridSize.y) * scale + scale)
-		this.vel = new CreateVector(0, 0)
+		this.vel = new CreateVector()
 		this.direction
 		this.directionBuffer
 		this.directionChangeCooldown = false
@@ -136,7 +136,7 @@ class Snake {
 
 class Food {
 	constructor() {
-		this.pos = new CreateVector(0, 0)
+		this.pos = new CreateVector()
 		this.noSpace = false
 
 		if (gridSize.x * gridSize.y - (snake.tail.length + 1) > 0) {
