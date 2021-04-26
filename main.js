@@ -23,7 +23,9 @@ canvas.height = innerHeight
 TODO:
 
 -find a better way to get the maxTextWidth
--fix movement, can't be going left then doing up and down same movement frame, will go up then try to buffer down instead of only doing down
+-find a better way to handle buffered inputs
+-"BUG" Go straight right, if you press Up and Down on same frame the down movement will be buffered. A more logical event would be to cancel the up movement cause player wants to go down
+-"BUG" Go paralell to food at 1 length, turn to food and away on same frame, buffers the away movement which is possible at length 1 but executes it after getting to length 2
 
 */
 
