@@ -232,7 +232,7 @@ addEventListener('keydown', (event) => {
 		return
 	}
 	if (event.key === 't') {
-		Stylish = (Stylish === true) ? false : true
+		Stylish = !Stylish
 		return
 	}
 	directionKey = (event.key === 'w' || event.key === 'ArrowUp') ? 'ArrowUp' : ((event.key === 'a' || event.key === 'ArrowLeft') ? 'ArrowLeft' : ((event.key === 's' || event.key === 'ArrowDown') ? 'ArrowDown' : ((event.key === 'd' || event.key === 'ArrowRight') ? 'ArrowRight' : undefined)))
